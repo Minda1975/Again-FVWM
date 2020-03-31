@@ -1,0 +1,209 @@
+#################################################################
+#
+# A configuration file for FVWM.
+#
+#################################################################
+
+
+
+DestroyFunc StartFunction
+AddToFunc StartFunction
++ I Exec exec xsetroot -solid \#000000
++ I Module FvwmButtons
+
+DestroyFunc InitFunction
+AddToFunc InitFunction
++ I Exec exec setxkbmap -layout "us,lt,ru" -option "grp:ctrl_shift_toggle"
++ I Exec exec xscreensaver -nosplash &
+
+*FvwmButtonsFore Black
+*FvwmButtonsBack SteelBlue3
+*FvwmButtonsFont None
+*FvwmButtonsGeometry 300x100-0-0
+*FvwmButtonsRows 1
+
+*FvwmButtons(Swallow XClock 'Exec xclock -padding 0 -fg white -bg SteelBlue3 &')
+*FvwmButtons(Swallow(UseOld,NoKill) "xload" `Exec xload -title xload -bg SteelBlue3 -update 3 -nolabel &`)
+# limited number of desktops 
+DeskTopName 0 Main DeskTop
+DesktopName 1 Second Desktop
+DeskTopName 2 Third Desktop
+DeskTopName 3 Fourth Desktop
+DeskTopSize 4x1
+##############################################################################
+# Mouse menus
+#
+
+# This is the command menu for the left mouse button
+AddToMenu CommandMenu "Command Menu"  Title
++ "Run"  exec gmrun 
++ "Xterm"   exec xterm 
++ "Firefox"  exec firefox-esr
++ "Audacious"  exec audacious
++ "Radio"      exec urxvt -e mplayer http://ice6.somafm.com/metal-128-mp3
++       "Volume Control"        Popup VolumeMenu
++ ""    Nop
++ "Restart fvwm"  Restart 
++ "Lock Screen"   exec xscreensaver-command -lock
++ "Exit Fvwm" Quit
+
+# Window operations for the centre mouse button
+AddToMenu Global-Window-Ops    "Window Ops"    Title
++       "Move"          Move-or-Raise2
++       "Resize"        Resize-or-Raise2
++       "Raise"         Raise
++       "Lower"         Lower
++       "(De)Iconify"   Iconify
++       "(Un)Stick"     Stick
++       "(Un)Maximize"  maximize_func
++       ""              Nop
++       "Delete"        Delete
++       "Close"         Close
++       "Destroy"       Destroy
++       ""              Nop
++       "Refresh Screen" Refresh
+
+# Window Ops for the top left of every window
+AddToMenu Window-Ops   "Move"          Move-or-Raise
++       "Resize"        Resize-or-Raise
++       "Raise/Lower"   RaiseLower
++       "Iconify"       Iconify
++       "(Un)Stick"     Stick
++       ""              Nop
++       "Delete"        Delete
++       "Close"         Close
++       "Destroy"       Destroy
+
+AddToMenu VolumeMenu  "Volume Control"  Title
++       "Alsamixer"             exec urxvt -e alsamixer
++       "Alsamixergui"          exec alsamixergui
+
+############################################################################
+# menus and mouse actions
+#
+
+# this is for the titlebar. double-click to maximise / minimise
+AddToFunc Move-or-Raise  "I" Raise
++    "M" Move
++    "D" Maximize
+
+AddToFunc Move-or-Raise2        "M" Raise
++    "M" Move
++    "D" Lower
+
+AddToFunc Maximize-Func         "C" Maximize     100 100
+
+AddToFunc Move-or-Iconify       "I" Raise
++                               "M" Move
++                               "D" Iconify
+
+AddToFunc Resize-or-Raise       "I" Raise
++                               "M" Resize
++                               "D" Lower
+
+AddToFunc Resize-or-Raise2      "M" Raise
++                               "M" Resize
++                               "D" Lower
+
+AddToFunc Iconify-and-Raise     "I" Iconify
++                               "I" Raise
+
+############################################################################
+# MOUSE Setup
+#
+# root window:
+# - Left Mouse Button brings up the Command Menu
+# - Centre Mouse Button is the window operations list
+# - Right Mouse Button is a window list
+#     Button Context Modifi  Function
+Mouse 1  R    A       Menu CommandMenu Nop
+Mouse 2  R     A       Menu Global-Window-Ops Nop
+Mouse 3  R     A       WindowList
+
+# Now, title bar buttons
+# Left is menu, right is minimise, maximise, close
+#     Button Context Modifi  Function
+Mouse 0  1       A       Menu Window-Ops Close
+Mouse 0  2     A      Close
+Mouse 0  4     A      Maximize-Func
+Mouse 0  6     A      Iconify
+
+# Button 1 in Frame or Sides is a resize-or-raise, in Icons is a move or 
+# de-iconify, and on Top does a move-or-raise
+#     Button Context Modifi  Function
+Mouse 1  FS      A       Resize-or-Raise
+Mouse 1  I       A       Move-or-Iconify
+Mouse 1  T       A       Move-or-Raise
+
+# Button 2 in an Icon is de-iconify, in Corners/Sides/Titlebar gets Ops Menu
+#     Button Context Modifi  Function
+#Mouse 2  I       A       Iconify
+Mouse 2  FST     A       Menu Window-Ops Nop
+# Button 3 does a raise-lower on anything
+#Mouse 3  TSIF    A       RaiseLower
+
+############################################################################
+# COLORS and FONTS and Styles
+#
+# window in focus
+HilightColor  linen Red3
+
+# all other windows 
+Style "*" Color linen/SteelBlue3
+
+# icons go in bottom left
+Style "*" IconBox 0 1030 750 1550
+
+# down and up in less than these milliseconds to be considered a click
+ClickTime 250
+
+# opaque moves
+OpaqueMoveSize 100
+
+# handle desktop edges, we dont want them for desktop switching
+# handle desktop edges, we dont want them for desktop switching
+EdgeScroll 0 0
+EdgeThickness 0
+Key 1 A 4  GotoDesk 0 0
+Key 2 A 4 GotoDesk 0 1
+Key 3 A 4 GotoDesk 0 2
+
+# window placement
+Style "*" SmartPlacement
+Style "*" RandomPlacement
+
+# window styles
+Style "Fvwm*"  NoTitle, Sticky, WindowListSkip, NoHandles, BorderWidth 0
+
+# close button, top right
+AddButtonStyle 2 16 20x20@1 30x20@1 50x40@1 70x20@1 80x20@1 80x30@0 60x50@0 80x80@0 70x80@0 50x60@0 30x80@0 20x80@0 20x70@0 40x50@1 20x30@0 20x20@1
+# maximise button, to the left of close button
+AddButtonStyle 4 Vector 4 50x25@1 75x75@0 25x75@0 50x25@1
+# minimise button, to the left of the maximise button
+AddButtonStyle 6 Vector 4 50x75@1 25x25@1 75x25@1 50x75@0
+
+# make everything line up (snap) with each other. number is pixels proximity
+Style * SnapAttraction 10
+# only snap windows:
+# SnapAttraction 10 Windows
+
+
+# Ignore the "Numlock" key so it does not interfere with keyboard shortcuts
+#
+IgnoreModifiers L2
+#Unbind Menu
+Key F1 R A -
+
+#keys
+
+Key K A CM            Close
+Key M A CM            Menu RootMenu Nop
+Key R A CM            Restart
+Key T A CM            Exec exec x-terminal-emulator || xterm
+Key C A 4             Exec exec gmrun
+Key Escape A 4        Exec exec xscreensaver-command -lock
+Key F A 4             Maximize 
+Key I A 4             Iconify
+
+
+
