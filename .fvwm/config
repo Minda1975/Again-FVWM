@@ -4,11 +4,11 @@
 #
 #################################################################
 
-
+ImagePath $[HOME]/.fvwm/images
 
 DestroyFunc StartFunction
 AddToFunc StartFunction
-+ I Exec exec xsetroot -solid \#000000
++ I Exec exec xsetroot -solid \#B0C4DE
 + I Module FvwmButtons
 
 DestroyFunc InitFunction
@@ -17,19 +17,19 @@ AddToFunc InitFunction
 + I Exec exec xscreensaver -nosplash &
 
 *FvwmButtonsFore Black
-*FvwmButtonsBack SteelBlue3
+*FvwmButtonsBack White
 *FvwmButtonsFont None
-*FvwmButtonsGeometry 300x100-0-0
+*FvwmButtonsGeometry 300x50-0-0
 *FvwmButtonsRows 1
 
-*FvwmButtons(Swallow XClock 'Exec xclock -padding 0 -fg white -bg SteelBlue3 &')
-*FvwmButtons(Swallow(UseOld,NoKill) "xload" `Exec xload -title xload -bg SteelBlue3 -update 3 -nolabel &`)
+*FvwmButtons(Swallow XClock 'Exec xclock -padding 0 -fg black -bg white &')
+*FvwmButtons(Swallow(UseOld,NoKill) "xload" `Exec xload -title xload -bg white -update 3 -nolabel &`)
+*FvwmButtons(1x1 Frame 0 Swallow(UseOld) "FvwmPager" "Module FvwmPager 0 1")
+
 # limited number of desktops 
 DeskTopName 0 Main DeskTop
 DesktopName 1 Second Desktop
-DeskTopName 2 Third Desktop
-DeskTopName 3 Fourth Desktop
-DeskTopSize 4x1
+DeskTopSize 1x1
 ##############################################################################
 # Mouse menus
 #
@@ -120,13 +120,43 @@ Mouse 1  R    A       Menu CommandMenu Nop
 Mouse 2  R     A       Menu Global-Window-Ops Nop
 Mouse 3  R     A       WindowList
 
-# Now, title bar buttons
-# Left is menu, right is minimise, maximise, close
-#     Button Context Modifi  Function
-Mouse 0  1       A       Menu Window-Ops Close
-Mouse 0  2     A      Close
-Mouse 0  4     A      Maximize-Func
-Mouse 0  6     A      Iconify
+# Window Button Locations [135 Title 2]
+Mouse 1 1 A Close
+Mouse 1 3 A Iconify
+Mouse 1 5 A Maximize
+Mouse 1 2 A Menu Window-Ops
+
+DestroyDecor OSXDecor
+AddToDecor OSXDecor
++ TitleStyle AllActive TiledPixmap osx/title-active.png
++ TitleStyle AllInactive TiledPixmap osx/title-inactive.png
++ ButtonStyle All Simple -- UseTitleStyle
++ BorderStyle Simple -- HiddenHandles NoInset
++ TitleStyle Centered Height 20 -- Flat
++ ButtonStyle All -- Flat
++ AddButtonStyle 1 \
+        ActiveUp   (Pixmap osx/close-activeup.png   -- flat) \
+        ActiveDown (Pixmap osx/close-activedown.png -- flat) \
+        Inactive   (Pixmap osx/inactive.png   -- flat)
++ AddButtonStyle 2 \
+        ActiveUp   (Pixmap osx/options-activeup.png   -- flat) \
+        ActiveDown (Pixmap osx/options-activedown.png -- flat) \
+        Inactive   (Pixmap osx/inactive.png   -- flat)
++ AddButtonStyle 3 \
+        ActiveUp   (Pixmap osx/iconify-activeup.png   -- flat) \
+        ActiveDown (Pixmap osx/iconify-activedown.png -- flat) \
+        Inactive   (Pixmap osx/inactive.png   -- flat)
++ AddButtonStyle 5 \
+        ActiveUp   (Pixmap osx/maximize-activeup.png   -- flat) \
+        ActiveDown (Pixmap osx/maximize-activedown.png -- flat) \
+        Inactive   (Pixmap osx/inactive.png   -- flat)
++ ButtonStyle All - Clear
+
+Style * Colorset 1, HilightColorset 2, \
+        BorderColorset 3, HilightBorderColorset 4, \
+        BorderWidth 2, HandleWidth 2, \
+        FvwmBorder, FirmBorder, \
+        FvwmButtons, UseDecor OSXDecor
 
 # Button 1 in Frame or Sides is a resize-or-raise, in Icons is a move or 
 # de-iconify, and on Top does a move-or-raise
@@ -145,11 +175,14 @@ Mouse 2  FST     A       Menu Window-Ops Nop
 ############################################################################
 # COLORS and FONTS and Styles
 #
-# window in focus
-HilightColor  linen Red3
-
-# all other windows 
-Style "*" Color linen/SteelBlue3
+#   1 - Inactive Windows 
+#   2 - Active Window
+#   3 - Inactive Windows Borders
+#   4 - Active Windows Borders
+Colorset 1 fg black, bg rgb:98/B0/C8
+Colorset 2 fg black, bg white
+Colorset 3 fg black, bg rgb:98/B0/C8
+Colorset 4 fg black, bg rgb:98/B0/C8
 
 # icons go in bottom left
 Style "*" IconBox 0 1030 750 1550
@@ -161,26 +194,20 @@ ClickTime 250
 OpaqueMoveSize 100
 
 # handle desktop edges, we dont want them for desktop switching
-# handle desktop edges, we dont want them for desktop switching
 EdgeScroll 0 0
 EdgeThickness 0
 Key 1 A 4  GotoDesk 0 0
 Key 2 A 4 GotoDesk 0 1
-Key 3 A 4 GotoDesk 0 2
 
 # window placement
 Style "*" SmartPlacement
 Style "*" RandomPlacement
 
+#Menu Style
+MenuStyle * Foreground rgb:98/B0/C8, Background white
+
 # window styles
 Style "Fvwm*"  NoTitle, Sticky, WindowListSkip, NoHandles, BorderWidth 0
-
-# close button, top right
-AddButtonStyle 2 16 20x20@1 30x20@1 50x40@1 70x20@1 80x20@1 80x30@0 60x50@0 80x80@0 70x80@0 50x60@0 30x80@0 20x80@0 20x70@0 40x50@1 20x30@0 20x20@1
-# maximise button, to the left of close button
-AddButtonStyle 4 Vector 4 50x25@1 75x75@0 25x75@0 50x25@1
-# minimise button, to the left of the maximise button
-AddButtonStyle 6 Vector 4 50x75@1 25x25@1 75x25@1 50x75@0
 
 # make everything line up (snap) with each other. number is pixels proximity
 Style * SnapAttraction 10
@@ -197,7 +224,6 @@ Key F1 R A -
 #keys
 
 Key K A CM            Close
-Key M A CM            Menu RootMenu Nop
 Key R A CM            Restart
 Key T A CM            Exec exec x-terminal-emulator || xterm
 Key C A 4             Exec exec gmrun
